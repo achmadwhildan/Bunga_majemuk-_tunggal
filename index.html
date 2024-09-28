@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perhitungan Bunga Tunggal dan Majemuk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body style="background-color: rgba(128, 128, 128, 0.32);">
+    <div class="container mt-5">
+        <div class="card mx-auto" style="max-width: 600px;">
+            <div class="card-body">
+                <h3 class="text-center">Perhitungan Bunga</h3>
+
+                <form id="formBunga">
+                    <div class="mb-3">
+                        <label for="pokok" class="form-label">Pokok Pinjaman (Rp)</label>
+                        <input type="number" class="form-control" id="pokok" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="rate" class="form-label">Tingkat Bunga</label>
+                        <input type="number" class="form-control" id="rate" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="jenisRate" class="form-label">Jenis Tingkat Bunga</label>
+                        <select class="form-select" id="jenisRate">
+                            <option value="tahun">Per Tahun (%)</option>
+                            <option value="bulan">Per Bulan (%)</option>
+                            <option value="triwulan">Per Triwulan (%)</option>
+                            <option value="caturwulan">Per Caturwulan (%)</option>
+                            <option value="semester">Per Semester (%)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="waktu" class="form-label">Waktu (dalam Tahun)</label>
+                        <input type="number" class="form-control" id="waktu" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="jenisBunga" class="form-label">Jenis Bunga</label>
+                        <select class="form-select" id="jenisBunga">
+                            <option value="tunggal">Bunga Tunggal</option>
+                            <option value="majemuk">Bunga Majemuk</option>
+                        </select>
+                    </div>
+
+                    <button type="button" class="btn btn-primary w-100" onclick="hitungBunga()">Hitung Bunga</button>
+                </form>
+
+                <div class="mt-4">
+                    <h4>Hasil:</h4>
+                    <p id="hasilCicilan">Cicilan per Periode: Rp -</p>
+                    <p id="hasilTotalBayar">Total Pembayaran: Rp -</p>
+                    <p id="hasilTotalBunga">Total Bunga: Rp -</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function hitungBunga() {
+            let pokok = parseFloat(document.getElementById('pokok').value);
+            let rate = parseFloat(document.getElementById('rate').value) / 100;
+            let jenisRate = document.getElementById('jenisRate').value;
+            let waktu = parseFloat(document.getElementById('waktu').value);
+            let jenisBunga = document.getElementById('jenisBunga').value;
+
+            let adjustedRate;
+
+            switch (jenisRate) {
+                case 'tahun':
+                    adjustedRate = rate; 
+                    break;
+                case 'bulan':
+                    adjustedRate = rate * 12;  
+                    break;
+                case 'triwulan':
+                    adjustedRate = rate * 4;   
+                    break;
+                case 'caturwulan':
+                    adjustedRate = rate * 3;   
+                    break;
+                case 'semester':
+                    adjustedRate = rate * 2;   
+                    break;
+                default:
+                    adjustedRate = rate;
+            }
+
+            let totalBunga, totalPembayaran;
+
+            if (jenisBunga === 'tunggal') {
+                totalBunga = pokok * adjustedRate * waktu;
+                totalPembayaran = pokok + totalBunga;
+            } else if (jenisBunga === 'majemuk') {
+                totalPembayaran = pokok * Math.pow((1 + adjustedRate), waktu);
+                totalBunga = totalPembayaran - pokok;
+            }
+
+            let cicilan = totalPembayaran / (waktu * 12); 
+
+            let formatter = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 2
+            });
+
+            document.getElementById('hasilCicilan').innerHTML = "Cicilan per Periode: " + formatter.format(cicilan);
+            document.getElementById('hasilTotalBayar').innerHTML = "Total Pembayaran: " + formatter.format(totalPembayaran);
+            document.getElementById('hasilTotalBunga').innerHTML = "Total Bunga: " + formatter.format(totalBunga);
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
